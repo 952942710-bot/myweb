@@ -10,9 +10,52 @@
             padding: 20px;
             background: #000;
             display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .game-container {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: Arial, sans-serif;
+        }
+        
+        .speed-control {
+            background: rgba(51, 51, 255, 0.2);
+            border: 2px solid #33f;
+            border-radius: 10px;
+            padding: 15px;
+            color: #fff;
+            min-width: 120px;
+        }
+        
+        .speed-control h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .speed-btn {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background: #33f;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .speed-btn:hover {
+            background: #55f;
+        }
+        
+        .speed-btn.active {
+            background: #0f0;
+            color: #000;
         }
         
         .game-info {
@@ -122,31 +165,40 @@
     </style>
 </head>
 <body>
-    <div class="game-info">
-        <span>分数: <span id="score">0</span></span>
-        <span style="margin-left: 30px;">生命: <span id="lives">3</span></span>
+    <div class="speed-control">
+        <h3>速度调节</h3>
+        <button class="speed-btn" onclick="setSpeed('slow')">慢速</button>
+        <button class="speed-btn active" onclick="setSpeed('normal')">中速</button>
+        <button class="speed-btn" onclick="setSpeed('fast')">快速</button>
     </div>
     
-    <canvas id="gameCanvas" width="720" height="820"></canvas>
-    
-    <div class="controls">
-        <button class="btn" onclick="startGame()">开始游戏</button>
-        <button class="btn" onclick="pauseGame()">暂停/继续</button>
-        <p>使用方向键 ↑ ↓ ← → 控制吃豆人移动</p>
-        <p>吃掉所有豆子获得胜利，避开幽灵！</p>
-        <p>💡 游戏规则：</p>
-        <p>• 大号黄球（能量豆）：使吃豆人无敌并可吞噬幽灵</p>
-        <p>• 吞噬幽灵：获得200分额外奖励</p>
-        <p>• 幽灵重生：被吞噬后会在短时间内重新生成</p>
-        <p>• 挑战自己的最高分数记录！</p>
+    <div class="game-container">
+        <div class="game-info">
+            <span>分数: <span id="score">0</span></span>
+            <span style="margin-left: 30px;">生命: <span id="lives">3</span></span>
+        </div>
         
-        <div class="mobile-controls">
-            <div class="dpad">
-                <button class="dpad-btn up" onclick="setDirection('up')">↑</button>
-                <div class="dpad-row">
-                    <button class="dpad-btn left" onclick="setDirection('left')">←</button>
-                    <button class="dpad-btn down" onclick="setDirection('down')">↓</button>
-                    <button class="dpad-btn right" onclick="setDirection('right')">→</button>
+        <canvas id="gameCanvas" width="720" height="820"></canvas>
+        
+        <div class="controls">
+            <button class="btn" onclick="startGame()">开始游戏</button>
+            <button class="btn" onclick="pauseGame()">暂停/继续</button>
+            <p>使用方向键 ↑ ↓ ← → 控制吃豆人移动</p>
+            <p>吃掉所有豆子获得胜利，避开幽灵！</p>
+            <p>💡 游戏规则：</p>
+            <p>• 大号黄球（能量豆）：使吃豆人无敌并可吞噬幽灵</p>
+            <p>• 吞噬幽灵：获得200分额外奖励</p>
+            <p>• 幽灵重生：被吞噬后会在短时间内重新生成</p>
+            <p>• 挑战自己的最高分数记录！</p>
+            
+            <div class="mobile-controls">
+                <div class="dpad">
+                    <button class="dpad-btn up" onclick="setDirection('up')">↑</button>
+                    <div class="dpad-row">
+                        <button class="dpad-btn left" onclick="setDirection('left')">←</button>
+                        <button class="dpad-btn down" onclick="setDirection('down')">↓</button>
+                        <button class="dpad-btn right" onclick="setDirection('right')">→</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -172,8 +224,8 @@
         let gamePaused = false;
         let animationId = null;
         let frameCount = 0;
-        const PACMAN_SPEED = 4;
-        const GHOST_SPEED = 6;
+        let PACMAN_SPEED = 4;
+        let GHOST_SPEED = 6;
         
         const WALL = 1;
         const DOT = 2;
@@ -233,10 +285,10 @@
         };
         
         let ghosts = [
-            { x: 18, y: 18, color: '#f00', direction: 'up', speed: 0.8 },
-            { x: 17, y: 18, color: '#0ff', direction: 'down', speed: 0.7 },
-            { x: 19, y: 18, color: '#ff0', direction: 'left', speed: 0.6 },
-            { x: 18, y: 17, color: '#f0f', direction: 'right', speed: 0.5 }
+            { x: 17, y: 15, color: '#f00', direction: 'up', speed: 0.8 },
+            { x: 18, y: 15, color: '#0ff', direction: 'down', speed: 0.7 },
+            { x: 19, y: 15, color: '#ff0', direction: 'left', speed: 0.6 },
+            { x: 18, y: 14, color: '#f0f', direction: 'right', speed: 0.5 }
         ];
         
         let powerMode = false;
@@ -466,7 +518,7 @@
                 if (ghost.x === pacman.x && ghost.y === pacman.y) {
                     if (powerMode) {
                         ghost.x = 18;
-                        ghost.y = 18;
+                        ghost.y = 15;
                         score += 200;
                         updateScore();
                     } else {
@@ -512,14 +564,14 @@
             pacman.direction = 'right';
             pacman.nextDirection = 'right';
             
-            ghosts[0].x = 18;
-            ghosts[0].y = 18;
-            ghosts[1].x = 17;
-            ghosts[1].y = 18;
+            ghosts[0].x = 17;
+            ghosts[0].y = 15;
+            ghosts[1].x = 18;
+            ghosts[1].y = 15;
             ghosts[2].x = 19;
-            ghosts[2].y = 18;
+            ghosts[2].y = 15;
             ghosts[3].x = 18;
-            ghosts[3].y = 17;
+            ghosts[3].y = 14;
         }
         
         function updateScore() {
@@ -622,6 +674,27 @@
         function setDirection(direction) {
             if (!gameRunning) return;
             pacman.nextDirection = direction;
+        }
+        
+        function setSpeed(speed) {
+            const speedBtns = document.querySelectorAll('.speed-btn');
+            speedBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(speed) {
+                case 'slow':
+                    PACMAN_SPEED = 12;
+                    GHOST_SPEED = 14;
+                    break;
+                case 'normal':
+                    PACMAN_SPEED = 8;
+                    GHOST_SPEED = 10;
+                    break;
+                case 'fast':
+                    PACMAN_SPEED = 4;
+                    GHOST_SPEED = 6;
+                    break;
+            }
         }
         
         document.addEventListener('keydown', (e) => {
